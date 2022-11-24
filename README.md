@@ -9,7 +9,7 @@
 
 ## Steps to project installtion
 1. install git on your system
-2. git clone https://github.com/ashishmeshram844/Task-Managent-Application.git
+2. git clone https://github.com/ashishmeshram844/Task-Management-Project.git
 3. create environment for project
 4. pip install -r requirements.txt (This install all required dependencies in your environment)
 5. goto root directory of project where manage.py file is present
