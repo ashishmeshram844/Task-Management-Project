@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+
+<html>
+{% load static %}
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="">
+    <!-- Font Awesome -->
+    <link href="{% static 'all.min.css' %}" rel="stylesheet" />
+    <!-- Google Fonts -->
+    <link href="{% static 'css.css' %}" rel="stylesheet" />
+    <!-- MDB -->
+    <link href="{% static 'mdb.min.css' %}" rel="stylesheet" />
+
+
+    <style>
+        .gradient-custom {
+            background: radial-gradient(50% 123.47% at 50% 50%, #00ff94 0%, #720059 100%), linear-gradient(121.28deg, #669600 0%, #ff0000 100%), linear-gradient(360deg, #0029ff 0%, #8fff00 100%), radial-gradient(100% 164.72% at 100% 100%, #6100ff 0%, #00ff57 100%), radial-gradient(100% 148.07% at 0% 0%, #fff500 0%, #51d500 100%);
+            background-blend-mode: screen, color-dodge, overlay, difference, normal;
+            overflow-y: scroll;
+        }
+        .forms_div{
+           
+            overflow: scroll;
+        }
+       
+    </style>
+</head>
+
+<body>
+
+    <section class="vh-100 gradient-custom">
+        <div class="p-5 py-5 h-100">
+            <div class="row d-flex  h-100">
+                <div class="col col-md-9 ">
+                    <div class="card mb-4 vh-100 forms_div">
+                        <div class="card-body p-3">
+                            <div class="row">
+                                <div class="col col-md-8">
+                                    <div class="row">
+                                        <div class="col col-md-4">
+                                            <form action="{% url 'save_milestone' %}" method="POST">
+                                                {% csrf_token %}
+                                                <div class="input-group mb-3">
+                                                    <input
+                                                    type="text"
+                                                    name="milestone_name"
+                                                    class="form-control"
+                                                    placeholder="Milestone Name"
+                                                    aria-describedby="button-addon4"
+                                                    />
+                                                    <button class="btn btn-outline-primary" type="submit" id="button-addon4" data-mdb-ripple-color="dark">
+                                                    Add Stone
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="col col-md-8">
+                                            <form action="{% url 'save_sprint' %}" method="POST">
+                                                {% csrf_token %}
+                                                <div class="input-group mb-3">
+                                                    <select class="form-control" name="milestone">
+                                                        <option>--select milestone--</option>
+                                                        {% for stone in all_milestones %}
+                                                            <option value="{{stone.id}}">{{stone.name}}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    <input
+                                                    type="text"
+                                                    name="sprint"
+                                                    class="form-control"
+                                                    placeholder="Sprint Name"
+                                                    aria-describedby="button-addon5"
+                                                    />
+                                                    <button class="btn btn-outline-primary" type="submit" id="button-addon5" data-mdb-ripple-color="dark">
+                                                    Add Sprint
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col col-md-4">
+                                    <form method="POST" action="{% url 'download_excel' %}">
+                                        {% csrf_token %}
+                                        <div class="row">
+                                            <div class="col col-md-8">
+                                                <select class="form-control" name="status_name">
+                                                    <option value="All">All</option>
+                                                    {% for i in all_status %}
+                                                    <option value="{{i.name}}">{{i.name}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="col col-md-3">
+                                                <button type="submit" class="btn btn-success">DOWNLOAD</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            {% comment %}  {% endcomment %}
+                            <!-- Tabs navs -->
+                                <ul class="nav nav-tabs mb-3" id="ex1" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                    <a
+                                        class="nav-link active"
+                                        id="ex1-tab-1"
+                                        data-mdb-toggle="tab"
+                                        href="#ex1-tabs-1"
+                                        role="tab"
+                                        aria-controls="ex1-tabs-1"
+                                        aria-selected="true"
+                                        >All ({{total_task}})</a
+                                    >
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                    <a
+                                        class="nav-link"
+                                        id="ex1-tab-2"
+                                        data-mdb-toggle="tab"
+                                        href="#ex1-tabs-2"
+                                        role="tab"
+                                        aria-controls="ex1-tabs-2"
+                                        aria-selected="false"
+                                        >Pending ({{pending_task}}) </a
+                                    >
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                    <a
+                                        class="nav-link"
+                                        id="ex1-tab-3"
+                                        data-mdb-toggle="tab"
+                                        href="#ex1-tabs-3"
+                                        role="tab"
+                                        aria-controls="ex1-tabs-3"
+                                        aria-selected="false"
+                                        >Bucket ({{bucket_task}}) </a
+                                    >
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <a
+                                            class="nav-link"
+                                            id="ex1-tab-4"
+                                            data-mdb-toggle="tab"
+                                            href="#ex1-tabs-4"
+                                            role="tab"
+                                            aria-controls="ex1-tabs-4"
+                                            aria-selected="false"
+                                            >Completed ({{completed_task}})</a
+                                        >
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <a
+                                            class="nav-link"
+                                            id="ex1-tab-5"
+                                            data-mdb-toggle="tab"
+                                            href="#ex1-tabs-5"
+                                            role="tab"
+                                            aria-controls="ex1-tabs-5"
+                                            aria-selected="false"
+                                            >Progress ({{progress_task}})</a
+                                        >
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <a
+                                            class="nav-link"
+                                            id="ex1-tab-6"
+                                            data-mdb-toggle="tab"
+                                            href="#ex1-tabs-6"
+                                            role="tab"
+                                            aria-controls="ex1-tabs-6"
+                                            aria-selected="false"
+                                            >Not Mine ({{not_mine}})</a
+                                        >
+                                    </li>
+
+                                </ul>
+                                <!-- Tabs navs -->
+                                
+                                <!-- Tabs content -->
+                                <div class="tab-content" id="ex1-content">
+                                    <div class="tab-pane fade show active" id="ex1-tabs-1" role="tabpanel" aria-labelledby="ex1-tab-1">
+                                        <table class="table">
+                                            <thead>
+                                            <tr>
+                                                <th scope="col">Task Name</th>
+                                                <th scope="col">Task Status</th>
+                                                <th scope="col">Created</th>
+                                                <th scope="col">Start</th>
+                                                <th scope="col">End</th>
+                                                <th scope="col">Action</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for task in all_tasks %}
+                                            {% if task.status.name == "Progress" %}
+                                            <tr class="table-warning">
+                                            {% endif %} 
+                                            {% if task.status.name == "Pending" %}
+                                            <tr class="table-danger">
+                                            {% endif %} 
+                                            {% if task.status.name == "Completed" %}
+                                            <tr class="table-success">
+                                            {% endif %} 
+                                            {% if task.status.name == "Bucket" %}
+                                            <tr class="table-primary">
+                                            {% endif %}
+                        
+                                                <th scope="row"> {{task.name}}</th>
+                                                <td> {{task.status.name}}</td>
+                                                <td>{{task.created_date|date}}</td>
+                                                <td>{{task.taskdetail.start_time}}</td>
+                                                <td>{{task.taskdetail.end_time}}</td>
+                                                <td>
+                                                    <div class="btn-group" role="group" aria-label="Basic example">
+                                                        <a href="/{{task.id}}" type="button" class="btn btn-sm btn-warning">Update</a>
+                                                        <!-- Button trigger modal -->
+                                                        <a href="{% url 'delete_task' task.id %}" onclick="setDeleteUrl('{{task.id}}')" type="button" class="btn btn-sm btn-danger" data-mdb-toggle="modal" data-mdb-target="#staticBackdrop">
+                                                            Delete
+                                                        </a>
+                                                        <a href="{% url 'subtasks' task.id %}" type="button" class="btn btn-sm btn-info">Subtasks</a>
+                                                        <a href="{% url 'history' task.id %}" type="button" class="btn btn-sm btn-primary">History</a>
+                                                    </div>
+                                                </td>
+        
+                                            </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                       
+                                    </div>
+                                    <div class="tab-pane fade" id="ex1-tabs-2" role="tabpanel" aria-labelledby="ex1-tab-2">
+                                        <table class="table">
+                                            <thead>
+                                              <tr>
+                                                <th scope="col">Task Name</th>
+                                                <th scope="col">Task Status</th>
+                                                <th scope="col">Created</th>
+                                                <th scope="col">Start</th>
+                                                <th scope="col">End</th>
+                                                <th scope="col">Action</th>
+                                              </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for task in all_tasks %}
+                                                {% if task.status.name == "Pending" %}
+                                                    {% if task.status.name == "Progress" %}
+                                                        <tr class="table-warning">
+                                                    {% endif %} 
+                                                    {% if task.status.name == "Pending" %}
+                                                        <tr class="table-danger">
+                                                    {% endif %} 
+                                                    {% if task.status.name == "Completed" %}
+                                                        <tr class="table-success">
+                                                    {% endif %} 
+                                                    {% if task.status.name == "Bucket" %}
+                                                        <tr class="table-primary">
+                                                    {% endif %}
+                                
+                                                        <th scope="row"> {{task.name}}</th>
+                                                        <td> {{task.status.name}}</td>
+                                                        <td>{{task.created_date|date}}</td>
+                                                        <td>{{task.taskdetail.start_time}}</td>
+                                                        <td>{{task.taskdetail.end_time}}</td>
+                                                        <td>
+                                                            <div class="btn-group" role="group" aria-label="Basic example">
+                                                                <a href="/{{task.id}}" type="button" class="btn btn-sm btn-warning">Update</a>
+                                                                <a href="{% url 'delete_task' task.id %}" type="button" class="btn btn-sm btn-danger">Delete</a>
+                                                                <a href="{% url 'subtasks' task.id %}" type="button" class="btn btn-sm btn-info">Subtasks</a>
+                                                                <a href="{% url 'history' task.id %}" type="button" class="btn btn-sm btn-primary">History</a>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                {% endif %}
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+        
+                                        
+        
+                                    </div>
+                                    <div class="tab-pane fade" id="ex1-tabs-3" role="tabpanel" aria-labelledby="ex1-tab-3">
+                                        <table class="table">
+                                            <thead>
+                                              <tr>
+                                                <th scope="col">Task Name</th>
+                                                <th scope="col">Task Status</th>
+                                                <th scope="col">Created</th>
+                                                <th scope="col">Start</th>
+                                                <th scope="col">End</th>
+                                                <th scope="col">Action</th>
+                                              </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for task in all_tasks %}
+                                                {% if task.status.name == "Bucket" %}
+                                                    {% if task.status.name == "Progress" %}
+                                                        <tr class="table-warning">
+                                                    {% endif %} 
+                                                    {% if task.status.name == "Pending" %}
+                                                        <tr class="table-danger">
+                                                    {% endif %} 
+                                                    {% if task.status.name == "Completed" %}
+                                                        <tr class="table-success">
+                                                    {% endif %} 
+                                                    {% if task.status.name == "Bucket" %}
+                                                        <tr class="table-primary">
+                                                    {% endif %}
+                                
+                                                        <th scope="row"> {{task.name}}</th>
+                                                        <td> {{task.status.name}}</td>
+                                                        <td>{{task.created_date|date}}</td>
+                                                        <td>{{task.taskdetail.start_time}}</td>
+                                                        <td>{{task.taskdetail.end_time}}</td>
+                                                        <td>
+                                                            <div class="btn-group" role="group" aria-label="Basic example">
+                                                                <a href="/{{task.id}}" type="button" class="btn btn-sm btn-warning">Update</a>
+                                                                <a href="{% url 'delete_task' task.id %}" type="button" class="btn btn-sm btn-danger">Delete</a>
+                                                                <a href="{% url 'subtasks' task.id %}" type="button" class="btn btn-sm btn-info">Subtasks</a>
+                                                                <a href="{% url 'history' task.id %}" type="button" class="btn btn-sm btn-primary">History</a>
+                                                            </div>
+                
+                                                        </td>
+                
+                                                    </tr>
+                                                {% endif %}
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+        
+                                        
+                                    </div>
+                                    <div class="tab-pane fade" id="ex1-tabs-4" role="tabpanel" aria-labelledby="ex1-tab-4">
+                                        <table class="table">
+                                            <thead>
+                                              <tr>
+                                                <th scope="col">Task Name</th>
+                                                <th scope="col">Task Status</th>
+                                                <th scope="col">Created</th>
+                                                <th scope="col">Start</th>
+                                                <th scope="col">End</th>
+                                                <th scope="col">Action</th>
+                                              </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for task in all_tasks %}
+                                                {% if task.status.name == "Completed" %}
+                                                    {% if task.status.name == "Progress" %}
+                                                        <tr class="table-warning">
+                                                    {% endif %} 
+                                                    {% if task.status.name == "Pending" %}
+                                                        <tr class="table-danger">
+                                                    {% endif %} 
+                                                    {% if task.status.name == "Completed" %}
+                                                        <tr class="table-success">
+                                                    {% endif %} 
+                                                    {% if task.status.name == "Bucket" %}
+                                                        <tr class="table-primary">
+                                                    {% endif %}
+                                
+                                                        <th scope="row"> {{task.name}}</th>
+                                                        <td> {{task.status.name}}</td>
+                                                        <td>{{task.created_date|date}}</td>
+                                                        <td>{{task.taskdetail.start_time}}</td>
+                                                        <td>{{task.taskdetail.end_time}}</td>
+                                                        <td>
+                                                            <div class="btn-group" role="group" aria-label="Basic example">
+                                                                <a href="/{{task.id}}" type="button" class="btn btn-sm btn-warning">Update</a>
+                                                                <a href="{% url 'delete_task' task.id %}" type="button" class="btn btn-sm btn-danger">Delete</a>
+                                                                <a href="{% url 'subtasks' task.id %}" type="button" class="btn btn-sm btn-info">Subtasks</a>
+                                                                <a href="{% url 'history' task.id %}" type="button" class="btn btn-sm btn-primary">History</a>
+                                                            </div>
+                                                        </td>
+                
+                                                    </tr>
+                                                {% endif %}
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+        
+                                    </div>
+                                    <div class="tab-pane fade" id="ex1-tabs-5" role="tabpanel" aria-labelledby="ex1-tab-5">
+                                        <table class="table">
+                                            <thead>
+                                              <tr>
+                                                <th scope="col">Task Name</th>
+                                                <th scope="col">Task Status</th>
+                                                <th scope="col">Created</th>
+                                                <th scope="col">Start</th>
+                                                <th scope="col">End</th>
+                                                <th scope="col">Action</th>
+                                              </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for task in all_tasks %}
+                                                {% if task.status.name == "Progress" %}
+                                                    {% if task.status.name == "Progress" %}
+                                                        <tr class="table-warning">
+                                                    {% endif %} 
+                                                    {% if task.status.name == "Pending" %}
+                                                        <tr class="table-danger">
+                                                    {% endif %} 
+                                                    {% if task.status.name == "Completed" %}
+                                                        <tr class="table-success">
+                                                    {% endif %} 
+                                                    {% if task.status.name == "Bucket" %}
+                                                        <tr class="table-primary">
+                                                    {% endif %}
+                                
+                                                        <th scope="row"> {{task.name}}</th>
+                                                        <td> {{task.status.name}}</td>
+                                                        <td>{{task.created_date|date}}</td>
+                                                        <td>{{task.taskdetail.start_time}}</td>
+                                                        <td>{{task.taskdetail.end_time}}</td>
+                                                        <td>
+                                                            <div class="btn-group" role="group" aria-label="Basic example">
+                                                                <a href="/{{task.id}}" type="button" class="btn btn-sm btn-warning">Update</a>
+                                                                <a href="{% url 'delete_task' task.id %}" type="button" class="btn btn-sm btn-danger">Delete</a>
+                                                                <a href="{% url 'subtasks' task.id %}" type="button" class="btn btn-sm btn-info">Subtasks</a>
+                                                                <a href="{% url 'history' task.id %}" type="button" class="btn btn-sm btn-primary">History</a>
+                                                            </div>
+                                                        </td>
+                
+                                                    </tr>
+                                                {% endif %}
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+        
+                
+                                    </div>
+
+                                    <div class="tab-pane fade" id="ex1-tabs-6" role="tabpanel" aria-labelledby="ex1-tab-6">
+                                        <table class="table">
+                                            <thead>
+                                              <tr>
+                                                <th scope="col">Task Name</th>
+                                                <th scope="col">Task Status</th>
+                                                <th scope="col">Created</th>
+                                                <th scope="col">Start</th>
+                                                <th scope="col">End</th>
+                                                <th scope="col">Action</th>
+                                              </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for task in not_mine_tsk %}
+                                                {% if task.status.name == "Not Mine Task" %}
+                                                    {% if task.status.name == "Progress" %}
+                                                        <tr class="table-warning">
+                                                    {% endif %} 
+                                                    {% if task.status.name == "Pending" %}
+                                                        <tr class="table-danger">
+                                                    {% endif %} 
+                                                    {% if task.status.name == "Completed" %}
+                                                        <tr class="table-success">
+                                                    {% endif %} 
+                                                    {% if task.status.name == "Bucket" %}
+                                                        <tr class="table-primary">
+                                                    {% endif %}
+                                
+                                                        <th scope="row"> {{task.name}}</th>
+                                                        <td> {{task.status.name}}</td>
+                                                        <td>{{task.created_date|date}}</td>
+                                                        <td>{{task.taskdetail.start_time}}</td>
+                                                        <td>{{task.taskdetail.end_time}}</td>
+                                                        <td>
+                                                            <div class="btn-group" role="group" aria-label="Basic example">
+                                                                <a href="/{{task.id}}" type="button" class="btn btn-sm btn-warning">Update</a>
+                                                                <a href="{% url 'delete_task' task.id %}" type="button" class="btn btn-sm btn-danger">Delete</a>
+                                                                <a href="{% url 'subtasks' task.id %}" type="button" class="btn btn-sm btn-info">Subtasks</a>
+                                                                <a href="{% url 'history' task.id %}" type="button" class="btn btn-sm btn-primary">History</a>
+                                                            </div>
+                                                        </td>
+                
+                                                    </tr>
+                                                {% endif %}
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+        
+                
+                                    </div>
+                                </div>
+                                <!-- Tabs content -->
+
+                            {% comment %}  {% endcomment %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col col-md-3">
+                    <div class="card mb-4 vh-100 forms_div">
+                        <div class="card-body p-3">
+                            <form class=" mb-5" method="POST" action="/">
+                                {% csrf_token %}
+                                <label class="form-label" for="form2"> Select Sprint </label>
+                                <select class="form-control" name="sprint_sel">
+                                    <option>--select sprint--</option>
+                                    {% for sp in all_sprints %}
+                                        <option value="{{sp.id}}">{{sp.name}}</option>
+                                    {% endfor %}
+                                </select>
+
+                                <label class="form-label" for="form2"> task Name </label>
+                                <input type="text" name="task_name" id="form2" class="form-control" />
+                                
+                            
+                                <div class="row">
+                                <button type="submit" class="btn btn-info ms-2 mt-3">Add</button>
+                                </div>
+                            </form>
+                            <hr>
+                            {% if task_detail %}
+                            <form class=" mb-4" method="POST" action="/{{task_detail.id}}/" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col">
+                                        <label> Task Name </label>
+                                        <input type="text" value="{{task_detail.name}}" name="task_name" class="form-control" placeholder="Task name">
+                                    </div>
+                                    <div class="col">
+                                        <label>Task Status </label>
+                                        <select class="form-control" name="task_status">
+                                            {% for status in all_status %}
+                                                <option {% if status.id == task_detail.status.id %} selected {% endif %} value="{{status.id}}"> {{status.name}} </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <label> Expected Start Time </label>
+                                        <input type="datetime-local" value="{{task_detail.taskdetail.start_time|date:'Y-m-d H:i'}}" name="start_time" class="form-control" placeholder="Start Time">
+                                    </div>
+                                    <div class="col">
+                                        <label>Expected End Time </label>
+                                        <input type="datetime-local" value="{{task_detail.taskdetail.end_time|date:'Y-m-d H:i'}}" name="end_time" class="form-control" placeholder="End Time">
+                                    </div>
+                                </div>
+
+                                <div class="row mt-3">
+                                    <div class="col">
+                                        <label> Task Description (Optional)</label>
+                                      <pre><textarea class="form-control" rows='3' name="task_description" placeholder="Enter Description of your Task">{{task_detail.taskdetail.description|default:""}}</textarea></pre>
+                                    </div>
+                                </div>
+                                <div class="row mt-1">
+                                    <div class="col">
+                                        <label> Task Code (Optional)</label>
+                                      <pre><textarea class="form-control" rows='6' name="task_code" placeholder="Enter Code of your Task">{{last_task_code.code|default:""}}</textarea></pre>
+                                    </div>
+                                </div>
+                               <div class="row mt-1">
+                                <div class="col">
+                                    <label> Enter File Name </label>
+                                    <input type="input" name="task_file_name" class="form-control">
+                                </div>
+                               </div>
+                                <div class="row mt-3">
+                                    <div class="col">
+                                        <label> Attach File (Optional) </label>
+                                        <input type="file" name="task_file" class="form-control">
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col col-md-12">
+                                        <button type="submit" class="btn bg-warning btn-lg btn-block mt-5 text-white">Update This Task</button>
+                                    </div>
+                                </div>
+                            </form>
+                            {% endif %}
+
+                            {% if task_history %}
+
+                            <!--TASK HISTORY-->
+                                                                <!-- Tabs navs -->
+                                <ul class="nav nav-tabs mb-3" id="tabb" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                    <a
+                                        class="nav-link active"
+                                        id="tabb-tab-1"
+                                        data-mdb-toggle="tab"
+                                        href="#tabb-tabs-1"
+                                        role="tab"
+                                        aria-controls="tabb-tabs-1"
+                                        aria-selected="true"
+                                        >HISTORY</a
+                                    >
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                    <a
+                                        class="nav-link"
+                                        id="tabb-tab-2"
+                                        data-mdb-toggle="tab"
+                                        href="#tabb-tabs-2"
+                                        role="tab"
+                                        aria-controls="tabb-tabs-2"
+                                        aria-selected="false"
+                                        >FILES</a
+                                    >
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                    <a
+                                        class="nav-link"
+                                        id="tabb-tab-3"
+                                        data-mdb-toggle="tab"
+                                        href="#tabb-tabs-3"
+                                        role="tab"
+                                        aria-controls="tabb-tabs-3"
+                                        aria-selected="false"
+                                        >CODES</a
+                                    >
+                                    </li>
+                                </ul>
+                                <!-- Tabs navs -->
+                                
+                                <!-- Tabs content -->
+                                <div class="tab-content" id="tabb-content">
+                                    <div
+                                    class="tab-pane fade show active"
+                                    id="tabb-tabs-1"
+                                    role="tabpanel"
+                                    aria-labelledby="tabb-tab-1"
+                                    >
+                                   
+                                    {% for hist in task_history %}
+                                        <ul class="list-group mb-0">
+                                            <li class="list-group-item d-flex align-items-center border-0 mb-2 rounded" style="background-color: #f4f6f7;">
+                                            {{forloop.counter}}.  {{hist.comment}} || {{hist.created_date}}
+                                            </li>
+                                        </ul>
+                                    {% endfor %}
+                                    </div>
+                                    <div class="tab-pane fade" id="tabb-tabs-2" role="tabpanel" aria-labelledby="tabb-tab-2">
+                                        {% for task_file in task_files %}
+                                            <ul class="list-group mb-0">
+                                                <li class="list-group-item d-flex align-items-center border-0 mb-2 rounded" style="background-color: #f4f6f7;">
+                                                 <a href="/media/{{task_file.task_file}}" target="_blank"> {{task_file.name }} </a> || {{task_file.created_date}}
+                                                </li>
+                                            </ul>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="tab-pane fade" id="tabb-tabs-3" role="tabpanel" aria-labelledby="tabb-tab-3">
+                                    {% for codee in task_codes %}
+                                        <label> DATE : {{codee.created_date}} </label>
+                                        <textarea class="form-control" disabled rows="8" > {{codee.code}} </textarea>
+                                    {% endfor %}
+
+                                    </div>
+                                </div>
+                                <!-- Tabs content -->
+                            <!-- END TASK HISTORY-->
+
+                            {% endif %}
+
+                            {% if task_subtask %}
+                            <form class=" mb-4 mt-3" method="POST" action="{% url 'subtasks' task_subtask.id %}" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="col">
+                                    <label>Enter Subtask Name</label>
+                                    <input type="text" name="subtask_name" class="form-control">
+                                </div>
+
+                                <div class="col">
+                                    <label>Description</label>
+                                    <textarea class="form-control" name="subtask_description" rows="5"></textarea>
+                                </div>
+
+                                <div class="col">
+                                    <div class="row">
+                                        <div class="col col-md-12">
+                                            <button type="submit" class="btn bg-warning btn-lg btn-block mt-5 text-white">Save Subtask</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </form>
+                            {% endif%}
+
+                            {% if subtask_obj %}
+                            <form class=" mb-4 mt-3" method="POST" action="{% url 'subtask_update' subtask_obj.id %}" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="col">
+                                    <label>Enter Subtask Name</label>
+                                    <input type="text" name="subtask_name" value="{{subtask_obj.name}}" class="form-control">
+                                </div>
+
+                                <div class="col">
+                                    <label>Description</label>
+                                    <textarea class="form-control" name="subtask_description" rows="5">{{subtask_obj.description}}</textarea>
+                                </div>
+
+                                <div class="col">
+                                    <div class="row">
+                                        <div class="col col-md-12">
+                                            <button type="submit" class="btn bg-warning btn-lg btn-block mt-5 text-white">Update Subtask</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </form>
+                            {% endif%}
+
+
+
+
+                            {% if all_subtask %}
+                                {% for subtask in all_subtask %}
+
+
+                            {% comment %}  {% endcomment %}
+
+                                    <!-- Tabs navs -->
+                                    <ul class="nav nav-tabs mb-3" id="ex-with-icons" role="tablist">
+                                        <li class="nav-item" role="presentation">
+                                        <a class="nav-link active" id="ex-with-icons-tab-{{forloop.counter}}" data-mdb-toggle="tab" href="#ex-with-icons-tabs-{{forloop.counter}}" role="tab"
+                                            aria-controls="ex-with-icons-tabs-{{forloop.counter}}" aria-selected="true"><i class="fas fa-chart-pie fa-fw me-2"></i>SubTask - {{forloop.counter}}</a>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                        <a class="nav-link" id="ex-with-icons-tab-sec-{{forloop.counter}}" data-mdb-toggle="tab" href="#ex-with-icons-tabs-sec-{{forloop.counter}}" role="tab"
+                                            aria-controls="ex-with-icons-tabs-sec-{{forloop.counter}}" aria-selected="false"><i class="fas fa-chart-line fa-fw me-2"></i>SubTask Work</a>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                    </ul>
+                                    <!-- Tabs navs -->
+                                    
+                                    <!-- Tabs content -->
+                                    <div class="tab-content" id="ex-with-icons-content">
+                                        <div class="tab-pane fade show active" id="ex-with-icons-tabs-{{forloop.counter}}" role="tabpanel" aria-labelledby="ex-with-icons-tab-{{forloop.counter}}">
+                                            <div class="mt-4">
+                                                <strong> Number : </strong> {{forloop.counter}} <br>
+                                                <strong> Name : </strong>{{subtask.name}} <br>
+                                                <strong> Description : </strong> {{subtask.description}}  <br>
+                                                <a href="{% url 'subtask_update' subtask.id %}" class="badge bg-info">Update</a>
+                                                <a href="{% url 'delete_subtask' subtask.id %}" class="badge bg-danger">Delete</a>
+                                                <hr>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="ex-with-icons-tabs-sec-{{forloop.counter}}" role="tabpanel" aria-labelledby="ex-with-icons-tab-sec-{{forloop.counter}}">
+                                            <div class="mt-4">
+                                                <form method="POST" action="{% url 'save_subtask_work' subtask.id %}">
+                                                    {% csrf_token %}
+                                                    <div class=" mb-3">
+                                                        <input
+                                                        type="text"
+                                                        name = "subtask_work_name"
+                                                        class="form-control mb-2"
+                                                        placeholder = "Work title here"
+                                                        />
+                                                        <textarea class="form-control mb-2" placeholder="Write issues here " name="subtask_work_description"></textarea>
+                                                        <button class="btn btn-primary" type="submit"  data-mdb-ripple-color="dark">
+                                                        Add
+                                                        </button>
+                                                       
+                                                    </div>
+                                                    <div class="col mt-3">
+                                                        {% for work in all_subtask_work %}
+                                                            {% if subtask.id == work.subtask.id %}
+                                                            <div class="bg-secondary p-3 mb-4">
+                                                               <p> <strong>Work : </strong>{{work.name }} - 
+                                                                    <a href="{% url 'delete_subtask_work' work.id %}" class="badge bg-danger"> Delete</a></p>
+                                                                    <strong>Issue : </strong>
+
+                                                                    {{work.description|default:""}}
+                                                            </div>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </div>
+                                                </form>
+
+                                                <hr>
+                                            </div>
+                                        <hr>
+                                        </div>
+                                       
+                                    </div>
+                                    <!-- Tabs content -->
+
+                            {% comment %}  {% endcomment %}
+
+                                {% empty %}
+                                <h3> No subtasks </h3>
+                                {% endfor %}
+                            {% endif %}
+
+
+
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+
+    <!-- Modal -->
+    <div
+    class="modal fade"
+    id="staticBackdrop"
+    data-mdb-backdrop="static"
+    data-mdb-keyboard="false"
+    tabindex="-1"
+    aria-labelledby="staticBackdropLabel"
+    aria-hidden="true"
+    >
+    <div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-body text-center mt-5 mb-5">Are you sure you want to delete</div>
+        <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">Close</button>
+        <a type="button" id="delete_url"  class="btn btn-danger">Yes Delete Please</a>
+        </div>
+    </div>
+    </div>
+    </div>
+    <!-- SCRIPTS -->
+    <script type="text/javascript" src="{% static 'mdb.min.js' %}"></script>
+</body>
+
+</html>
